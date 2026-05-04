@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="DT2 Team" />
+
+<meta name="date" content="2026-04-29" />
+
+<title>Shiny Integration</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Shiny Integration</h1>
+<h4 class="author">DT2 Team</h4>
+<h4 class="date">2026-04-29</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#basic-usage" id="toc-basic-usage">Basic Usage</a></li>
+<li><a href="#reading-table-state" id="toc-reading-table-state">Reading
+Table State</a></li>
+<li><a href="#proxy-server-side-manipulation" id="toc-proxy-server-side-manipulation">Proxy: Server-Side
+Manipulation</a></li>
+<li><a href="#buttons-with-custom-style" id="toc-buttons-with-custom-style">Buttons with Custom Style</a></li>
+<li><a href="#infinite-scrolling-scroller" id="toc-infinite-scrolling-scroller">Infinite Scrolling
+(Scroller)</a></li>
+<li><a href="#custom-layout" id="toc-custom-layout">Custom
+Layout</a></li>
+<li><a href="#pagination-types" id="toc-pagination-types">Pagination
+Types</a></li>
+<li><a href="#inline-inputs-checkboxes-and-buttons" id="toc-inline-inputs-checkboxes-and-buttons">Inline Inputs (Checkboxes
+and Buttons)</a></li>
+<li><a href="#server-side-processing" id="toc-server-side-processing">Server-Side Processing</a></li>
+<li><a href="#dataset-switcher-with-bslib" id="toc-dataset-switcher-with-bslib">Dataset Switcher with
+bslib</a></li>
+<li><a href="#shared-theme-across-tables" id="toc-shared-theme-across-tables">Shared Theme Across Tables</a></li>
+<li><a href="#complete-example-custom-renderers-flags-and-columncontrol" id="toc-complete-example-custom-renderers-flags-and-columncontrol">Complete
+Example: Custom Renderers, Flags, and ColumnControl</a></li>
+</ul>
+</div>
+
+<p>All examples below are <strong>complete Shiny apps</strong> using
+<code>bslib</code> with Bootstrap 5. Copy, paste, and run.</p>
+<div id="basic-usage" class="section level2">
+<h2>Basic Usage</h2>
+<p>The minimal DT2 Shiny app uses <code>dt2_output()</code> in the UI
+and <code>render_dt2()</code> in the server. DT2 tables integrate
+naturally with <code>bslib</code> cards and Bootstrap 5 themes — the
+table inherits the page theme automatically:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;DT2 in Shiny&quot;</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;my_table&quot;</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  )</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  output<span class="sc">$</span>my_table <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>))</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  })</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>}</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="reading-table-state" class="section level2">
+<h2>Reading Table State</h2>
+<p>Every DT2 table pushes its state (<code>order</code>,
+<code>search</code>, <code>page</code>, <code>selected</code> rows) to
+<code>input$&lt;id&gt;_state</code> automatically:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Table State&quot;</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  ),</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Current state&quot;</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">verbatimTextOutput</span>(<span class="st">&quot;state_info&quot;</span>))</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  )</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  })</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  output<span class="sc">$</span>state_info <span class="ot">&lt;-</span> <span class="fu">renderPrint</span>({</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>    state <span class="ot">&lt;-</span> input<span class="sc">$</span>tbl_state</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(state)) <span class="fu">return</span>(<span class="st">&quot;(interact with the table)&quot;</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Reason:&quot;</span>, state<span class="sc">$</span>reason, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Page:&quot;</span>,   state<span class="sc">$</span>page<span class="sc">$</span>page <span class="sc">+</span> <span class="dv">1</span>, <span class="st">&quot;of&quot;</span>, state<span class="sc">$</span>page<span class="sc">$</span>pages, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Search:&quot;</span>, <span class="cf">if</span> (<span class="fu">nzchar</span>(state<span class="sc">$</span>search)) state<span class="sc">$</span>search <span class="cf">else</span> <span class="st">&quot;(none)&quot;</span>, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Order:&quot;</span>,  <span class="fu">paste</span>(state<span class="sc">$</span>order, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  })</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>}</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="proxy-server-side-manipulation" class="section level2">
+<h2>Proxy: Server-Side Manipulation</h2>
+<p>Use <code>dt2_proxy()</code> to update a table without re-rendering
+it. This is essential for responsive dashboards: you can replace the
+data, change the page, adjust sorting, or update the search filter — all
+without the flicker of a full re-render:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Proxy Demo&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="fu">actionButton</span>(<span class="st">&quot;refresh&quot;</span>,  <span class="st">&quot;Refresh data&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn-sm btn-outline-primary w-100 mb-2&quot;</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="fu">actionButton</span>(<span class="st">&quot;go_last&quot;</span>,  <span class="st">&quot;Go to last page&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn-sm btn-outline-primary w-100 mb-2&quot;</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="fu">actionButton</span>(<span class="st">&quot;sort_sl&quot;</span>,  <span class="st">&quot;Sort Sepal.Length \u2193&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn-sm btn-outline-primary w-100 mb-2&quot;</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="fu">hr</span>(),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    <span class="fu">textInput</span>(<span class="st">&quot;search_text&quot;</span>, <span class="st">&quot;Search&quot;</span>, <span class="at">placeholder =</span> <span class="st">&quot;e.g. setosa&quot;</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>    <span class="fu">actionButton</span>(<span class="st">&quot;search_btn&quot;</span>, <span class="st">&quot;Apply&quot;</span>, <span class="at">class =</span> <span class="st">&quot;btn-sm btn-primary w-100&quot;</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  ),</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  )</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>))</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  })</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  proxy <span class="ot">&lt;-</span> <span class="fu">dt2_proxy</span>(<span class="st">&quot;tbl&quot;</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>refresh, {</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>    new_data <span class="ot">&lt;-</span> iris[<span class="fu">sample</span>(<span class="fu">nrow</span>(iris), <span class="dv">50</span>), ]</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>    <span class="fu">dt2_replace_data</span>(proxy, new_data)</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  })</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>go_last, {</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>    <span class="fu">dt2_proxy_page</span>(proxy, <span class="st">&quot;last&quot;</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>  })</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>sort_sl, {</span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>    <span class="fu">dt2_proxy_order</span>(proxy, <span class="fu">c</span>(<span class="st">&quot;Sepal.Length&quot;</span>, <span class="st">&quot;desc&quot;</span>),</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>                    <span class="at">columns =</span> <span class="fu">names</span>(iris))</span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>  })</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>search_btn, {</span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>    <span class="fu">dt2_proxy_search</span>(proxy, input<span class="sc">$</span>search_text)</span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>  })</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>}</span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="buttons-with-custom-style" class="section level2">
+<h2>Buttons with Custom Style</h2>
+<p>Override the default button appearance with any Bootstrap 5 button
+class. The <code>dt2_use_buttons()</code> helper accepts a
+<code>button_class</code> parameter that applies to all buttons in the
+group. Here, solid primary blue buttons replace the default outlined
+style:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Styled Buttons&quot;</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  )</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    opts <span class="ot">&lt;-</span> <span class="fu">dt2_use_buttons</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>      <span class="at">buttons =</span> <span class="fu">c</span>(<span class="st">&quot;copy&quot;</span>, <span class="st">&quot;csv&quot;</span>, <span class="st">&quot;excel&quot;</span>, <span class="st">&quot;print&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>      <span class="at">position =</span> <span class="st">&quot;topEnd&quot;</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="at">button_class =</span> <span class="st">&quot;btn btn-sm btn-primary&quot;</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    )</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    <span class="fu">dt2</span>(mtcars, <span class="at">options =</span> opts)</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  })</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>}</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="infinite-scrolling-scroller" class="section level2">
+<h2>Infinite Scrolling (Scroller)</h2>
+<p>Use virtual scrolling instead of pagination for large datasets. The
+Scroller extension renders only the visible rows inside a fixed-height
+container; more rows load seamlessly as the user scrolls. Combined with
+<code>deferRender = TRUE</code>, this keeps memory usage low even for
+tens of thousands of rows:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Scroller \u2014 10 000 rows&quot;</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  )</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  big <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="at">id    =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">10000</span>), <span class="dv">3</span>),</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">sample</span>(LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">10000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  )</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="fu">dt2</span>(big, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>      <span class="at">scroller    =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>      <span class="at">scrollY     =</span> <span class="dv">400</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>      <span class="at">deferRender =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>      <span class="at">buttons     =</span> <span class="fu">list</span>(<span class="st">&quot;copy&quot;</span>, <span class="st">&quot;csv&quot;</span>),</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>      <span class="at">layout      =</span> <span class="fu">list</span>(</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>        <span class="at">topStart =</span> <span class="fu">list</span>(<span class="at">search =</span> <span class="fu">list</span>(<span class="at">placeholder =</span> <span class="st">&quot;Filter...&quot;</span>)),</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>        <span class="at">topEnd   =</span> <span class="st">&quot;buttons&quot;</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>      )</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>    ))</span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>  })</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>}</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="custom-layout" class="section level2">
+<h2>Custom Layout</h2>
+<p>DataTables v2 uses <code>layout</code> to position toolbar elements
+around the table. Each slot (<code>topStart</code>, <code>topEnd</code>,
+<code>bottomStart</code>, <code>bottomEnd</code>) accepts a string,
+list, or <code>NULL</code>. This example rearranges search, buttons,
+info, and pagination into non-default positions:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Custom Layout&quot;</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  )</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>      <span class="at">pageLength =</span> <span class="dv">10</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>      <span class="at">layout =</span> <span class="fu">list</span>(</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>        <span class="at">topStart  =</span> <span class="st">&quot;pageLength&quot;</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>        <span class="at">topEnd    =</span> <span class="fu">list</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>          <span class="at">buttons =</span> <span class="fu">list</span>(<span class="st">&quot;copy&quot;</span>, <span class="st">&quot;csv&quot;</span>, <span class="st">&quot;excel&quot;</span>),</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>          <span class="at">search  =</span> <span class="fu">list</span>(<span class="at">placeholder =</span> <span class="st">&quot;Search...&quot;</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>        ),</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>        <span class="at">bottomStart =</span> <span class="st">&quot;info&quot;</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>        <span class="at">bottomEnd   =</span> <span class="st">&quot;paging&quot;</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>      )</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>    ))</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>  })</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>}</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="pagination-types" class="section level2">
+<h2>Pagination Types</h2>
+<p>DataTables v2 configures pagination through the <code>layout</code>
+option using <code>paging</code> as a named list, replacing the
+deprecated <code>pagingType</code> parameter. This example shows three
+common configurations side by side: simple navigation (prev/next only),
+full navigation with all elements, and no pagination at all.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">layout_columns</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Simple (prev / next only)&quot;</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>      <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl_simple&quot;</span>))</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>    ),</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;Full (first / 1 2 3 / last)&quot;</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>      <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl_full&quot;</span>))</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    )</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  ),</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;No pagination&quot;</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl_none&quot;</span>))</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  )</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>)</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  output<span class="sc">$</span>tbl_simple <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>      <span class="at">pageLength =</span> <span class="dv">5</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>      <span class="at">layout =</span> <span class="fu">list</span>(<span class="at">bottomEnd =</span> <span class="fu">list</span>(<span class="at">paging =</span> <span class="fu">list</span>(</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>        <span class="at">type =</span> <span class="st">&quot;simple&quot;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>      )))</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>    ))</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>  })</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>  output<span class="sc">$</span>tbl_full <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>      <span class="at">pageLength =</span> <span class="dv">5</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>      <span class="at">layout =</span> <span class="fu">list</span>(<span class="at">bottomEnd =</span> <span class="fu">list</span>(<span class="at">paging =</span> <span class="fu">list</span>(</span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>        <span class="at">firstLast =</span> <span class="cn">TRUE</span>, <span class="at">previousNext =</span> <span class="cn">TRUE</span>, <span class="at">numbers =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>      )))</span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>    ))</span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a>  })</span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>  output<span class="sc">$</span>tbl_none <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>    <span class="fu">dt2</span>(iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>, ], <span class="at">options =</span> <span class="fu">list</span>(<span class="at">paging =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>  })</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>}</span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a></span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="inline-inputs-checkboxes-and-buttons" class="section level2">
+<h2>Inline Inputs (Checkboxes and Buttons)</h2>
+<p>DT2 can embed Shiny inputs (checkboxes, action buttons) directly
+inside table cells. When the user clicks a checkbox or button, DT2 sends
+the event to Shiny via <code>input$&lt;id&gt;_state</code> with
+<code>reason = &quot;input&quot;</code>. This pattern is useful for row-level
+actions like selection, approval workflows, or delete buttons:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Inline Inputs&quot;</span>),</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  ),</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Events&quot;</span>),</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">verbatimTextOutput</span>(<span class="st">&quot;events&quot;</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  )</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>    <span class="at">name   =</span> <span class="fu">c</span>(<span class="st">&quot;Alice&quot;</span>, <span class="st">&quot;Bob&quot;</span>, <span class="st">&quot;Carol&quot;</span>, <span class="st">&quot;Dave&quot;</span>),</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>    <span class="at">score  =</span> <span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">82</span>, <span class="dv">91</span>, <span class="dv">78</span>),</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>    <span class="at">select =</span> <span class="cn">NA</span>,</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>    <span class="at">action =</span> <span class="cn">NA</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>  )</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>    opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df), <span class="at">pageLength =</span> <span class="dv">10</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>    opts <span class="ot">&lt;-</span> <span class="fu">dt2_col_checkbox</span>(opts, <span class="st">&quot;select&quot;</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>    opts <span class="ot">&lt;-</span> <span class="fu">dt2_col_button</span>(opts, <span class="st">&quot;action&quot;</span>, <span class="at">label =</span> <span class="st">&quot;View&quot;</span>)</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>    <span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>  })</span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>  event_log <span class="ot">&lt;-</span> <span class="fu">reactiveVal</span>(<span class="st">&quot;&quot;</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>tbl_row_check, {</span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>    info <span class="ot">&lt;-</span> input<span class="sc">$</span>tbl_row_check</span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>    msg <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Checkbox row &quot;</span>, info<span class="sc">$</span>row, <span class="st">&quot;: &quot;</span>, info<span class="sc">$</span>value, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>    <span class="fu">event_log</span>(<span class="fu">paste0</span>(<span class="fu">event_log</span>(), msg))</span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>  })</span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>tbl_row_button, {</span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a>    info <span class="ot">&lt;-</span> input<span class="sc">$</span>tbl_row_button</span>
+<span id="cb8-43"><a href="#cb8-43" tabindex="-1"></a>    msg <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Button clicked row &quot;</span>, info<span class="sc">$</span>row, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-44"><a href="#cb8-44" tabindex="-1"></a>    <span class="fu">event_log</span>(<span class="fu">paste0</span>(<span class="fu">event_log</span>(), msg))</span>
+<span id="cb8-45"><a href="#cb8-45" tabindex="-1"></a>  })</span>
+<span id="cb8-46"><a href="#cb8-46" tabindex="-1"></a></span>
+<span id="cb8-47"><a href="#cb8-47" tabindex="-1"></a>  output<span class="sc">$</span>events <span class="ot">&lt;-</span> <span class="fu">renderText</span>(<span class="fu">event_log</span>())</span>
+<span id="cb8-48"><a href="#cb8-48" tabindex="-1"></a>}</span>
+<span id="cb8-49"><a href="#cb8-49" tabindex="-1"></a></span>
+<span id="cb8-50"><a href="#cb8-50" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="server-side-processing" class="section level2">
+<h2>Server-Side Processing</h2>
+<p>For very large datasets (100k+ rows), use server-side processing.
+Only the visible page is sent to the browser — sorting, filtering, and
+pagination happen on the R server. This avoids sending the entire
+dataset to the client, dramatically improving initial load time:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Server-Side Processing \u2014 100k rows&quot;</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  )</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  large_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>    <span class="at">id    =</span> <span class="fu">seq_len</span>(<span class="dv">100000</span>),</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>), <span class="dv">4</span>),</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">sample</span>(LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>], <span class="dv">100000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  )</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>  <span class="fu">dt2_bind_server</span>(<span class="st">&quot;tbl&quot;</span>, large_data)</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>    <span class="fu">dt2</span>(large_data, <span class="at">options =</span> <span class="fu">list</span>(</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>      <span class="at">columns      =</span> <span class="fu">names</span>(large_data),</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>      <span class="at">pageLength   =</span> <span class="dv">25</span>,</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>      <span class="at">server_side  =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>      <span class="at">language     =</span> <span class="fu">list</span>(<span class="at">info =</span> <span class="st">&quot;Showing _START_ to _END_ of _TOTAL_ rows&quot;</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>    ))</span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>  })</span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a>}</span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="dataset-switcher-with-bslib" class="section level2">
+<h2>Dataset Switcher with bslib</h2>
+<p>A common dashboard pattern: let the user choose a dataset and a theme
+preset from the sidebar. The table re-renders reactively whenever either
+input changes. This demonstrates how DT2 integrates naturally with
+<code>bslib</code>’s <code>page_sidebar()</code> layout:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;DT2 + bslib&quot;</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="fu">selectInput</span>(<span class="st">&quot;dataset&quot;</span>, <span class="st">&quot;Dataset&quot;</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>                <span class="fu">c</span>(<span class="st">&quot;iris&quot;</span>, <span class="st">&quot;mtcars&quot;</span>, <span class="st">&quot;airquality&quot;</span>)),</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>    <span class="fu">selectInput</span>(<span class="st">&quot;theme_preset&quot;</span>, <span class="st">&quot;Theme preset&quot;</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>                <span class="fu">c</span>(<span class="st">&quot;default&quot;</span>, <span class="st">&quot;clean&quot;</span>, <span class="st">&quot;minimal&quot;</span>, <span class="st">&quot;compact&quot;</span>))</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>  ),</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Table&quot;</span>),</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>))</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>  )</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>)</span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a>    data <span class="ot">&lt;-</span> <span class="cf">switch</span>(input<span class="sc">$</span>dataset,</span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a>      <span class="at">iris       =</span> iris,</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a>      <span class="at">mtcars     =</span> mtcars,</span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>      <span class="at">airquality =</span> airquality</span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a>    )</span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a>    <span class="fu">dt2</span>(data,</span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a>        <span class="at">theme =</span> input<span class="sc">$</span>theme_preset,</span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a>        <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">10</span>))</span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a>  })</span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a>}</span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="shared-theme-across-tables" class="section level2">
+<h2>Shared Theme Across Tables</h2>
+<p>Define a theme once with <code>dt2_theme()</code> and reuse it across
+all tables in your app. This ensures consistent font scaling, button
+styling, and compactness without repeating configuration. Changes
+propagate instantly to every table that uses the theme:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>my_theme <span class="ot">&lt;-</span> <span class="fu">dt2_theme</span>(<span class="st">&quot;clean&quot;</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">compact      =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="at">font_scale   =</span> <span class="fl">0.85</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="at">button_class =</span> <span class="st">&quot;btn btn-sm btn-outline-dark&quot;</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>)</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_fillable</span>(</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;flatly&quot;</span>),</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>  <span class="at">padding =</span> <span class="st">&quot;1rem&quot;</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>  <span class="fu">layout_columns</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>    <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">6</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;iris&quot;</span>),</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>      <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl1&quot;</span>))</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>    ),</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>    <span class="fu">card</span>(</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>      <span class="fu">card_header</span>(<span class="st">&quot;mtcars&quot;</span>),</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>      <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl2&quot;</span>))</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>    )</span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  )</span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>)</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a>  output<span class="sc">$</span>tbl1 <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>    <span class="fu">dt2</span>(iris, <span class="at">theme =</span> my_theme, <span class="at">options =</span> <span class="fu">dt2_use_buttons</span>(</span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a>      <span class="at">buttons =</span> <span class="fu">c</span>(<span class="st">&quot;copy&quot;</span>, <span class="st">&quot;csv&quot;</span>)</span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a>    ))</span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a>  })</span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a></span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a>  output<span class="sc">$</span>tbl2 <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a>    <span class="fu">dt2</span>(mtcars, <span class="at">theme =</span> my_theme, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">pageLength =</span> <span class="dv">15</span>))</span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a>  })</span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a>}</span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+<div id="complete-example-custom-renderers-flags-and-columncontrol" class="section level2">
+<h2>Complete Example: Custom Renderers, Flags, and ColumnControl</h2>
+<p>This Shiny app demonstrates most DT2 features together: ColumnControl
+dropdowns, export buttons with spacer, custom JS renderers (links,
+flags, progress bars, colored currency), and full pt-BR translation.</p>
+<p>Copy and run it directly — it is also available at
+<code>system.file(&quot;examples/app_complete.R&quot;, package = &quot;DT2&quot;)</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">library</span>(jsonlite)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co"># ── Sample data (57 employees) ────────────────────────────────────────────────</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>json_url <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/StrategicProjects/DT2/main/inst/examples/employees.json&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co"># For offline use, the same JSON is bundled in inst/examples/employees.json</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>json_txt <span class="ot">&lt;-</span> <span class="st">&#39;{</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="st">  &quot;data&quot;: [</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Tiger Nixon&quot;,&quot;position&quot;:&quot;System Architect&quot;,&quot;salary&quot;:&quot;320800&quot;,&quot;start_date&quot;:&quot;2011-04-25&quot;,&quot;office&quot;:&quot;Edinburgh&quot;,&quot;extn&quot;:&quot;5421&quot;},</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Garrett Winters&quot;,&quot;position&quot;:&quot;Accountant&quot;,&quot;salary&quot;:&quot;170750&quot;,&quot;start_date&quot;:&quot;2011-07-25&quot;,&quot;office&quot;:&quot;Tokyo&quot;,&quot;extn&quot;:&quot;8422&quot;},</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Ashton Cox&quot;,&quot;position&quot;:&quot;Junior Technical Author&quot;,&quot;salary&quot;:&quot;86000&quot;,&quot;start_date&quot;:&quot;2009-01-12&quot;,&quot;office&quot;:&quot;San Francisco&quot;,&quot;extn&quot;:&quot;1562&quot;},</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Cedric Kelly&quot;,&quot;position&quot;:&quot;Senior JavaScript Developer&quot;,&quot;salary&quot;:&quot;433060&quot;,&quot;start_date&quot;:&quot;2012-03-29&quot;,&quot;office&quot;:&quot;Edinburgh&quot;,&quot;extn&quot;:&quot;6224&quot;},</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Airi Satou&quot;,&quot;position&quot;:&quot;Accountant&quot;,&quot;salary&quot;:&quot;162700&quot;,&quot;start_date&quot;:&quot;2008-11-28&quot;,&quot;office&quot;:&quot;Tokyo&quot;,&quot;extn&quot;:&quot;5407&quot;},</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Brielle Williamson&quot;,&quot;position&quot;:&quot;Integration Specialist&quot;,&quot;salary&quot;:&quot;372000&quot;,&quot;start_date&quot;:&quot;2012-12-02&quot;,&quot;office&quot;:&quot;New York&quot;,&quot;extn&quot;:&quot;4804&quot;},</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Herrod Chandler&quot;,&quot;position&quot;:&quot;Sales Assistant&quot;,&quot;salary&quot;:&quot;137500&quot;,&quot;start_date&quot;:&quot;2012-08-06&quot;,&quot;office&quot;:&quot;San Francisco&quot;,&quot;extn&quot;:&quot;9608&quot;},</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Rhona Davidson&quot;,&quot;position&quot;:&quot;Integration Specialist&quot;,&quot;salary&quot;:&quot;327900&quot;,&quot;start_date&quot;:&quot;2010-10-14&quot;,&quot;office&quot;:&quot;Tokyo&quot;,&quot;extn&quot;:&quot;6200&quot;},</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Colleen Hurst&quot;,&quot;position&quot;:&quot;JavaScript Developer&quot;,&quot;salary&quot;:&quot;205500&quot;,&quot;start_date&quot;:&quot;2009-09-15&quot;,&quot;office&quot;:&quot;San Francisco&quot;,&quot;extn&quot;:&quot;2360&quot;},</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="st">    {&quot;name&quot;:&quot;Sonya Frost&quot;,&quot;position&quot;:&quot;Software Engineer&quot;,&quot;salary&quot;:&quot;103600&quot;,&quot;start_date&quot;:&quot;2008-12-13&quot;,&quot;office&quot;:&quot;Edinburgh&quot;,&quot;extn&quot;:&quot;1667&quot;}</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="st">  ]</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="st">}&#39;</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(json_txt, <span class="at">flatten =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>data <span class="sc">%&gt;%</span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a>    <span class="at">salary     =</span> <span class="fu">as.numeric</span>(salary),</span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a>    <span class="at">extn       =</span> <span class="fu">as.integer</span>(extn),</span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a>    <span class="at">start_date =</span> <span class="fu">ymd</span>(start_date)</span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a>  )</span>
+<span id="cb12-32"><a href="#cb12-32" tabindex="-1"></a></span>
+<span id="cb12-33"><a href="#cb12-33" tabindex="-1"></a><span class="co"># ── Shiny App ─────────────────────────────────────────────────────────────────</span></span>
+<span id="cb12-34"><a href="#cb12-34" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb12-35"><a href="#cb12-35" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb12-36"><a href="#cb12-36" tabindex="-1"></a><span class="fu">library</span>(DT2)</span>
+<span id="cb12-37"><a href="#cb12-37" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb12-38"><a href="#cb12-38" tabindex="-1"></a></span>
+<span id="cb12-39"><a href="#cb12-39" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb12-40"><a href="#cb12-40" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">version =</span> <span class="dv">5</span>, <span class="at">bootswatch =</span> <span class="st">&quot;spacelab&quot;</span>),</span>
+<span id="cb12-41"><a href="#cb12-41" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;DT2 — Complete Example&quot;</span>,</span>
+<span id="cb12-42"><a href="#cb12-42" tabindex="-1"></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb12-43"><a href="#cb12-43" tabindex="-1"></a>    <span class="fu">h5</span>(<span class="st">&quot;Features&quot;</span>),</span>
+<span id="cb12-44"><a href="#cb12-44" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">ul</span>(</span>
+<span id="cb12-45"><a href="#cb12-45" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;ColumnControl (order + search dropdowns)&quot;</span>),</span>
+<span id="cb12-46"><a href="#cb12-46" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;Export buttons with spacer&quot;</span>),</span>
+<span id="cb12-47"><a href="#cb12-47" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;Custom JS renderers&quot;</span>),</span>
+<span id="cb12-48"><a href="#cb12-48" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">li</span>(<span class="st">&quot;pt-BR translation&quot;</span>)</span>
+<span id="cb12-49"><a href="#cb12-49" tabindex="-1"></a>    )</span>
+<span id="cb12-50"><a href="#cb12-50" tabindex="-1"></a>  ),</span>
+<span id="cb12-51"><a href="#cb12-51" tabindex="-1"></a>  <span class="co"># Flag sprites</span></span>
+<span id="cb12-52"><a href="#cb12-52" tabindex="-1"></a>  tags<span class="sc">$</span><span class="fu">head</span>(</span>
+<span id="cb12-53"><a href="#cb12-53" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">link</span>(</span>
+<span id="cb12-54"><a href="#cb12-54" tabindex="-1"></a>      <span class="at">rel =</span> <span class="st">&quot;stylesheet&quot;</span>, <span class="at">type =</span> <span class="st">&quot;text/css&quot;</span>,</span>
+<span id="cb12-55"><a href="#cb12-55" tabindex="-1"></a>      <span class="at">href =</span> <span class="st">&quot;https://cdn.jsdelivr.net/gh/lafeber/world-flags-sprite/stylesheets/flags32-both.css&quot;</span></span>
+<span id="cb12-56"><a href="#cb12-56" tabindex="-1"></a>    ),</span>
+<span id="cb12-57"><a href="#cb12-57" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">style</span>(<span class="fu">HTML</span>(<span class="st">&quot;</span></span>
+<span id="cb12-58"><a href="#cb12-58" tabindex="-1"></a><span class="st">      .f32 .flag { display:inline-block; width:32px; height:32px;</span></span>
+<span id="cb12-59"><a href="#cb12-59" tabindex="-1"></a><span class="st">                    vertical-align:middle; margin-right:6px; }</span></span>
+<span id="cb12-60"><a href="#cb12-60" tabindex="-1"></a><span class="st">      table.dataTable tbody td { vertical-align: middle; }</span></span>
+<span id="cb12-61"><a href="#cb12-61" tabindex="-1"></a><span class="st">    &quot;</span>))</span>
+<span id="cb12-62"><a href="#cb12-62" tabindex="-1"></a>  ),</span>
+<span id="cb12-63"><a href="#cb12-63" tabindex="-1"></a>  <span class="fu">card</span>(</span>
+<span id="cb12-64"><a href="#cb12-64" tabindex="-1"></a>    <span class="fu">card_header</span>(<span class="st">&quot;Employee Table&quot;</span>),</span>
+<span id="cb12-65"><a href="#cb12-65" tabindex="-1"></a>    <span class="fu">card_body</span>(<span class="fu">dt2_output</span>(<span class="st">&quot;tbl&quot;</span>, <span class="at">height =</span> <span class="st">&quot;auto&quot;</span>))</span>
+<span id="cb12-66"><a href="#cb12-66" tabindex="-1"></a>  )</span>
+<span id="cb12-67"><a href="#cb12-67" tabindex="-1"></a>)</span>
+<span id="cb12-68"><a href="#cb12-68" tabindex="-1"></a></span>
+<span id="cb12-69"><a href="#cb12-69" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb12-70"><a href="#cb12-70" tabindex="-1"></a>  output<span class="sc">$</span>tbl <span class="ot">&lt;-</span> <span class="fu">render_dt2</span>({</span>
+<span id="cb12-71"><a href="#cb12-71" tabindex="-1"></a></span>
+<span id="cb12-72"><a href="#cb12-72" tabindex="-1"></a>    <span class="co"># ── JS Renderers ──────────────────────────────────────────</span></span>
+<span id="cb12-73"><a href="#cb12-73" tabindex="-1"></a>    office_js <span class="ot">&lt;-</span> <span class="fu">JS</span>(<span class="st">&quot;</span></span>
+<span id="cb12-74"><a href="#cb12-74" tabindex="-1"></a><span class="st">      function(data, type) {</span></span>
+<span id="cb12-75"><a href="#cb12-75" tabindex="-1"></a><span class="st">        if (type !== &#39;display&#39;) return data;</span></span>
+<span id="cb12-76"><a href="#cb12-76" tabindex="-1"></a><span class="st">        var cc = {Argentina:&#39;ar&#39;, Edinburgh:&#39;_Scotland&#39;, London:&#39;_England&#39;,</span></span>
+<span id="cb12-77"><a href="#cb12-77" tabindex="-1"></a><span class="st">                  &#39;New York&#39;:&#39;us&#39;, &#39;San Francisco&#39;:&#39;us&#39;, Sydney:&#39;au&#39;, Tokyo:&#39;jp&#39;};</span></span>
+<span id="cb12-78"><a href="#cb12-78" tabindex="-1"></a><span class="st">        var flag = cc[data] || &#39;&#39;;</span></span>
+<span id="cb12-79"><a href="#cb12-79" tabindex="-1"></a><span class="st">        return &#39;&lt;span class=</span><span class="sc">\&quot;</span><span class="st">flag &#39; + flag + &#39;</span><span class="sc">\&quot;</span><span class="st">&gt;&lt;/span&gt; &#39; + data;</span></span>
+<span id="cb12-80"><a href="#cb12-80" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb12-81"><a href="#cb12-81" tabindex="-1"></a><span class="st">    &quot;</span>)</span>
+<span id="cb12-82"><a href="#cb12-82" tabindex="-1"></a></span>
+<span id="cb12-83"><a href="#cb12-83" tabindex="-1"></a>    salary_js <span class="ot">&lt;-</span> <span class="fu">JS</span>(<span class="st">&quot;</span></span>
+<span id="cb12-84"><a href="#cb12-84" tabindex="-1"></a><span class="st">      (function() {</span></span>
+<span id="cb12-85"><a href="#cb12-85" tabindex="-1"></a><span class="st">        var nfmt = DataTable.render.number(&#39;.&#39;, &#39;,&#39;, 2, &#39;R$ &#39;);</span></span>
+<span id="cb12-86"><a href="#cb12-86" tabindex="-1"></a><span class="st">        return function(data, type) {</span></span>
+<span id="cb12-87"><a href="#cb12-87" tabindex="-1"></a><span class="st">          var txt = nfmt.display(data);</span></span>
+<span id="cb12-88"><a href="#cb12-88" tabindex="-1"></a><span class="st">          if (type !== &#39;display&#39;) return txt;</span></span>
+<span id="cb12-89"><a href="#cb12-89" tabindex="-1"></a><span class="st">          var c = data &lt; 250000 ? &#39;red&#39; : data &lt; 500000 ? &#39;orange&#39; : &#39;green&#39;;</span></span>
+<span id="cb12-90"><a href="#cb12-90" tabindex="-1"></a><span class="st">          return &#39;&lt;span style=</span><span class="sc">\&quot;</span><span class="st">color:&#39; + c + &#39;</span><span class="sc">\&quot;</span><span class="st">&gt;&#39; + txt + &#39;&lt;/span&gt;&#39;;</span></span>
+<span id="cb12-91"><a href="#cb12-91" tabindex="-1"></a><span class="st">        };</span></span>
+<span id="cb12-92"><a href="#cb12-92" tabindex="-1"></a><span class="st">      })()</span></span>
+<span id="cb12-93"><a href="#cb12-93" tabindex="-1"></a><span class="st">    &quot;</span>)</span>
+<span id="cb12-94"><a href="#cb12-94" tabindex="-1"></a></span>
+<span id="cb12-95"><a href="#cb12-95" tabindex="-1"></a>    extn_js <span class="ot">&lt;-</span> <span class="fu">JS</span>(<span class="st">&quot;</span></span>
+<span id="cb12-96"><a href="#cb12-96" tabindex="-1"></a><span class="st">      function(data, type) {</span></span>
+<span id="cb12-97"><a href="#cb12-97" tabindex="-1"></a><span class="st">        return type === &#39;display&#39;</span></span>
+<span id="cb12-98"><a href="#cb12-98" tabindex="-1"></a><span class="st">          ? &#39;&lt;progress value=</span><span class="sc">\&quot;</span><span class="st">&#39; + data + &#39;</span><span class="sc">\&quot;</span><span class="st"> max=</span><span class="sc">\&quot;</span><span class="st">9999</span><span class="sc">\&quot;</span><span class="st">&gt;&lt;/progress&gt;&#39;</span></span>
+<span id="cb12-99"><a href="#cb12-99" tabindex="-1"></a><span class="st">          : data;</span></span>
+<span id="cb12-100"><a href="#cb12-100" tabindex="-1"></a><span class="st">      }</span></span>
+<span id="cb12-101"><a href="#cb12-101" tabindex="-1"></a><span class="st">    &quot;</span>)</span>
+<span id="cb12-102"><a href="#cb12-102" tabindex="-1"></a></span>
+<span id="cb12-103"><a href="#cb12-103" tabindex="-1"></a>    <span class="co"># ── Options ───────────────────────────────────────────────</span></span>
+<span id="cb12-104"><a href="#cb12-104" tabindex="-1"></a>    opts <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-105"><a href="#cb12-105" tabindex="-1"></a>      <span class="at">pageLength =</span> <span class="dv">10</span>,</span>
+<span id="cb12-106"><a href="#cb12-106" tabindex="-1"></a>      <span class="at">lengthMenu =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">25</span>, <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb12-107"><a href="#cb12-107" tabindex="-1"></a>      <span class="at">columns    =</span> <span class="fu">names</span>(df),</span>
+<span id="cb12-108"><a href="#cb12-108" tabindex="-1"></a></span>
+<span id="cb12-109"><a href="#cb12-109" tabindex="-1"></a>      <span class="at">layout =</span> <span class="fu">list</span>(</span>
+<span id="cb12-110"><a href="#cb12-110" tabindex="-1"></a>        <span class="at">topStart =</span> <span class="st">&quot;pageLength&quot;</span>,</span>
+<span id="cb12-111"><a href="#cb12-111" tabindex="-1"></a>        <span class="at">topEnd   =</span> <span class="fu">list</span>(</span>
+<span id="cb12-112"><a href="#cb12-112" tabindex="-1"></a>          <span class="at">buttons =</span> <span class="fu">list</span>(</span>
+<span id="cb12-113"><a href="#cb12-113" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;copyHtml5&quot;</span>, <span class="at">text =</span> <span class="st">&quot;Copiar&quot;</span>),</span>
+<span id="cb12-114"><a href="#cb12-114" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;csvHtml5&quot;</span>),</span>
+<span id="cb12-115"><a href="#cb12-115" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;excelHtml5&quot;</span>),</span>
+<span id="cb12-116"><a href="#cb12-116" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;spacer&quot;</span>, <span class="at">style =</span> <span class="st">&quot;bar&quot;</span>),</span>
+<span id="cb12-117"><a href="#cb12-117" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;colvis&quot;</span>, <span class="at">text =</span> <span class="st">&quot;Colunas&quot;</span>)</span>
+<span id="cb12-118"><a href="#cb12-118" tabindex="-1"></a>          ),</span>
+<span id="cb12-119"><a href="#cb12-119" tabindex="-1"></a>          <span class="at">search =</span> <span class="fu">list</span>(<span class="at">placeholder =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb12-120"><a href="#cb12-120" tabindex="-1"></a>        ),</span>
+<span id="cb12-121"><a href="#cb12-121" tabindex="-1"></a>        <span class="at">bottomEnd =</span> <span class="st">&quot;paging&quot;</span></span>
+<span id="cb12-122"><a href="#cb12-122" tabindex="-1"></a>      ),</span>
+<span id="cb12-123"><a href="#cb12-123" tabindex="-1"></a></span>
+<span id="cb12-124"><a href="#cb12-124" tabindex="-1"></a>      <span class="at">columnControl =</span> <span class="fu">list</span>(</span>
+<span id="cb12-125"><a href="#cb12-125" tabindex="-1"></a>        <span class="at">target  =</span> <span class="dv">0</span>,</span>
+<span id="cb12-126"><a href="#cb12-126" tabindex="-1"></a>        <span class="at">content =</span> <span class="fu">list</span>(<span class="st">&quot;order&quot;</span>, <span class="st">&quot;searchDropdown&quot;</span>, <span class="fu">list</span>(</span>
+<span id="cb12-127"><a href="#cb12-127" tabindex="-1"></a>          <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;orderAsc&quot;</span>, <span class="at">text =</span> <span class="st">&quot;Ordem crescente&quot;</span>),</span>
+<span id="cb12-128"><a href="#cb12-128" tabindex="-1"></a>          <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;orderDesc&quot;</span>, <span class="at">text =</span> <span class="st">&quot;Ordem decrescente&quot;</span>),</span>
+<span id="cb12-129"><a href="#cb12-129" tabindex="-1"></a>          <span class="st">&quot;spacer&quot;</span>,</span>
+<span id="cb12-130"><a href="#cb12-130" tabindex="-1"></a>          <span class="fu">list</span>(<span class="at">extend =</span> <span class="st">&quot;colVisDropdown&quot;</span>, <span class="at">text =</span> <span class="st">&quot;Selecionar colunas&quot;</span>)</span>
+<span id="cb12-131"><a href="#cb12-131" tabindex="-1"></a>        ))</span>
+<span id="cb12-132"><a href="#cb12-132" tabindex="-1"></a>      ),</span>
+<span id="cb12-133"><a href="#cb12-133" tabindex="-1"></a>      <span class="at">ordering =</span> <span class="fu">list</span>(<span class="at">indicators =</span> <span class="cn">FALSE</span>, <span class="at">handler =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb12-134"><a href="#cb12-134" tabindex="-1"></a></span>
+<span id="cb12-135"><a href="#cb12-135" tabindex="-1"></a>      <span class="at">columnDefs =</span> <span class="fu">list</span>(</span>
+<span id="cb12-136"><a href="#cb12-136" tabindex="-1"></a>        <span class="fu">list</span>(<span class="at">targets =</span> <span class="fu">which</span>(<span class="fu">names</span>(df) <span class="sc">==</span> <span class="st">&quot;office&quot;</span>) <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>,</span>
+<span id="cb12-137"><a href="#cb12-137" tabindex="-1"></a>             <span class="at">className =</span> <span class="st">&quot;f32&quot;</span>, <span class="at">render =</span> office_js),</span>
+<span id="cb12-138"><a href="#cb12-138" tabindex="-1"></a>        <span class="fu">list</span>(<span class="at">targets =</span> <span class="fu">which</span>(<span class="fu">names</span>(df) <span class="sc">==</span> <span class="st">&quot;salary&quot;</span>) <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>,</span>
+<span id="cb12-139"><a href="#cb12-139" tabindex="-1"></a>             <span class="at">className =</span> <span class="st">&quot;dt-body-right&quot;</span>, <span class="at">render =</span> salary_js),</span>
+<span id="cb12-140"><a href="#cb12-140" tabindex="-1"></a>        <span class="fu">list</span>(<span class="at">targets =</span> <span class="fu">which</span>(<span class="fu">names</span>(df) <span class="sc">==</span> <span class="st">&quot;extn&quot;</span>) <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>,</span>
+<span id="cb12-141"><a href="#cb12-141" tabindex="-1"></a>             <span class="at">render =</span> extn_js)</span>
+<span id="cb12-142"><a href="#cb12-142" tabindex="-1"></a>      ),</span>
+<span id="cb12-143"><a href="#cb12-143" tabindex="-1"></a></span>
+<span id="cb12-144"><a href="#cb12-144" tabindex="-1"></a>      <span class="at">language =</span> <span class="fu">list</span>(</span>
+<span id="cb12-145"><a href="#cb12-145" tabindex="-1"></a>        <span class="at">lengthMenu   =</span> <span class="st">&quot;Mostrar _MENU_&quot;</span>,</span>
+<span id="cb12-146"><a href="#cb12-146" tabindex="-1"></a>        <span class="at">search       =</span> <span class="st">&quot;Buscar&quot;</span>,</span>
+<span id="cb12-147"><a href="#cb12-147" tabindex="-1"></a>        <span class="at">info         =</span> <span class="st">&quot;Mostrando _START_ a _END_ de _TOTAL_ registros&quot;</span>,</span>
+<span id="cb12-148"><a href="#cb12-148" tabindex="-1"></a>        <span class="at">infoEmpty    =</span> <span class="st">&quot;Nenhum registro&quot;</span>,</span>
+<span id="cb12-149"><a href="#cb12-149" tabindex="-1"></a>        <span class="at">zeroRecords  =</span> <span class="st">&quot;Nenhum registro encontrado&quot;</span>,</span>
+<span id="cb12-150"><a href="#cb12-150" tabindex="-1"></a>        <span class="at">emptyTable   =</span> <span class="st">&quot;Nenhum dado disponível&quot;</span>,</span>
+<span id="cb12-151"><a href="#cb12-151" tabindex="-1"></a>        <span class="at">decimal      =</span> <span class="st">&quot;,&quot;</span>, <span class="at">thousands =</span> <span class="st">&quot;.&quot;</span>, <span class="at">infoThousands =</span> <span class="st">&quot;.&quot;</span>,</span>
+<span id="cb12-152"><a href="#cb12-152" tabindex="-1"></a>        <span class="at">lengthLabels =</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">10</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;10&quot;</span>, <span class="st">`</span><span class="at">25</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;25&quot;</span>, <span class="st">`</span><span class="at">-1</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;Todas&quot;</span>),</span>
+<span id="cb12-153"><a href="#cb12-153" tabindex="-1"></a>        <span class="at">paginate     =</span> <span class="fu">list</span>(<span class="at">first=</span><span class="st">&quot;«&quot;</span>, <span class="at">previous=</span><span class="st">&quot;‹&quot;</span>, <span class="st">`</span><span class="at">next</span><span class="st">`</span><span class="ot">=</span><span class="st">&quot;›&quot;</span>, <span class="at">last=</span><span class="st">&quot;»&quot;</span>),</span>
+<span id="cb12-154"><a href="#cb12-154" tabindex="-1"></a>        <span class="at">buttons =</span> <span class="fu">list</span>(</span>
+<span id="cb12-155"><a href="#cb12-155" tabindex="-1"></a>          <span class="at">copyTitle   =</span> <span class="st">&quot;Copiado!&quot;</span>,</span>
+<span id="cb12-156"><a href="#cb12-156" tabindex="-1"></a>          <span class="at">copySuccess =</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">_</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;%d linhas copiadas&quot;</span>, <span class="st">`</span><span class="at">1</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;1 linha copiada&quot;</span>)</span>
+<span id="cb12-157"><a href="#cb12-157" tabindex="-1"></a>        ),</span>
+<span id="cb12-158"><a href="#cb12-158" tabindex="-1"></a>        <span class="at">columnControl =</span> <span class="fu">list</span>(</span>
+<span id="cb12-159"><a href="#cb12-159" tabindex="-1"></a>          <span class="at">orderAsc =</span> <span class="st">&quot;Crescente&quot;</span>, <span class="at">orderDesc =</span> <span class="st">&quot;Decrescente&quot;</span>,</span>
+<span id="cb12-160"><a href="#cb12-160" tabindex="-1"></a>          <span class="at">searchDropdown =</span> <span class="st">&quot;Pesquisar&quot;</span>, <span class="at">colVisDropdown =</span> <span class="st">&quot;Colunas&quot;</span>,</span>
+<span id="cb12-161"><a href="#cb12-161" tabindex="-1"></a>          <span class="at">searchClear =</span> <span class="st">&quot;Limpar&quot;</span>,</span>
+<span id="cb12-162"><a href="#cb12-162" tabindex="-1"></a>          <span class="at">search =</span> <span class="fu">list</span>(</span>
+<span id="cb12-163"><a href="#cb12-163" tabindex="-1"></a>            <span class="at">text   =</span> <span class="fu">list</span>(<span class="at">contains=</span><span class="st">&quot;Contém&quot;</span>, <span class="at">starts=</span><span class="st">&quot;Começa por&quot;</span>,</span>
+<span id="cb12-164"><a href="#cb12-164" tabindex="-1"></a>                          <span class="at">ends=</span><span class="st">&quot;Termina em&quot;</span>, <span class="at">equal=</span><span class="st">&quot;Igual a&quot;</span>),</span>
+<span id="cb12-165"><a href="#cb12-165" tabindex="-1"></a>            <span class="at">number =</span> <span class="fu">list</span>(<span class="at">greater=</span><span class="st">&quot;Maior que&quot;</span>, <span class="at">less=</span><span class="st">&quot;Menor que&quot;</span>,</span>
+<span id="cb12-166"><a href="#cb12-166" tabindex="-1"></a>                          <span class="at">equal=</span><span class="st">&quot;Igual a&quot;</span>)</span>
+<span id="cb12-167"><a href="#cb12-167" tabindex="-1"></a>          )</span>
+<span id="cb12-168"><a href="#cb12-168" tabindex="-1"></a>        )</span>
+<span id="cb12-169"><a href="#cb12-169" tabindex="-1"></a>      )</span>
+<span id="cb12-170"><a href="#cb12-170" tabindex="-1"></a>    )</span>
+<span id="cb12-171"><a href="#cb12-171" tabindex="-1"></a></span>
+<span id="cb12-172"><a href="#cb12-172" tabindex="-1"></a>    <span class="fu">dt2</span>(df,</span>
+<span id="cb12-173"><a href="#cb12-173" tabindex="-1"></a>        <span class="at">compact =</span> <span class="cn">TRUE</span>, <span class="at">striped =</span> <span class="cn">TRUE</span>, <span class="at">hover =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-174"><a href="#cb12-174" tabindex="-1"></a>        <span class="at">font_scale =</span> <span class="fl">0.85</span>, <span class="at">responsive =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-175"><a href="#cb12-175" tabindex="-1"></a>        <span class="at">options =</span> opts)</span>
+<span id="cb12-176"><a href="#cb12-176" tabindex="-1"></a>  })</span>
+<span id="cb12-177"><a href="#cb12-177" tabindex="-1"></a>}</span>
+<span id="cb12-178"><a href="#cb12-178" tabindex="-1"></a></span>
+<span id="cb12-179"><a href="#cb12-179" tabindex="-1"></a><span class="fu">shinyApp</span>(ui, server)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
