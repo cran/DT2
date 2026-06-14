@@ -1,8 +1,8 @@
 Package: DT2
 Type: Package
 Title: 'DataTables' 2.x for R
-Version: 0.1.1
-Date: 2026-04-29
+Version: 0.1.2
+Date: 2026-06-14
 Authors@R: c(
     person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
     person("Marcos", "Wasilew", email = "marcos.wasilew@gmail.com", role = "aut"),
@@ -23,10 +23,10 @@ Imports: htmlwidgets (>= 1.6.0), htmltools, jsonlite, cli
 Suggests: shiny, rlang, dplyr, lubridate, tibble, bslib, knitr,
         rmarkdown, testthat (>= 3.1.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-04-29 17:22:00 UTC; leite
+Packaged: 2026-06-14 00:53:34 UTC; leite
 Author: Andre Leite [aut, cre],
   Marcos Wasilew [aut],
   Hugo Vasconcelos [aut],
@@ -34,4 +34,4 @@ Author: Andre Leite [aut, cre],
   Diogo Bezerra [aut]
 Maintainer: Andre Leite <leite@castlab.org>
 Repository: CRAN
-Date/Publication: 2026-05-04 11:30:13 UTC
+Date/Publication: 2026-06-14 05:20:09 UTC

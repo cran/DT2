@@ -12,7 +12,7 @@
 
 <meta name="author" content="DT2 Team" />
 
-<meta name="date" content="2026-04-29" />
+<meta name="date" content="2026-06-13" />
 
 <title>Column Formatting and Rendering</title>
 
@@ -2178,7 +2178,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Column Formatting and Rendering</h1>
 <h4 class="author">DT2 Team</h4>
-<h4 class="date">2026-04-29</h4>
+<h4 class="date">2026-06-13</h4>
 
 
 <div id="TOC">
@@ -2210,6 +2210,18 @@ follow the same pattern:</p>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
 <p>The <code>col_specs</code> argument accepts column names (matching
 <code>options$columns</code>) or 1-based integer indices.</p>
+<blockquote>
+<p><strong>Why <code>columns = names(df)</code>?</strong> When you refer
+to columns <em>by name</em>, DT2 needs to know the column order to
+translate names into positions. That list lives in
+<code>options$columns</code>, so set it once
+(<code>opts &lt;- list(columns = names(df))</code>) before calling any
+name-based helper. If you skip it, DT2 emits a warning and the target
+cannot be resolved — pass 1-based indices instead if you prefer not to
+set it. (<code>dt2()</code> itself fills <code>options$columns</code>
+from the data for rendering, but the helpers run <em>before</em>
+<code>dt2()</code>, so they need it set explicitly.)</p>
+</blockquote>
 </div>
 <div id="number-formatting" class="section level2">
 <h2>Number Formatting</h2>
@@ -2226,8 +2238,8 @@ follow the same pattern:</p>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                           <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">prefix =</span> <span class="st">&quot;R$ &quot;</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_format_number</span>(opts, <span class="st">&quot;volume&quot;</span>, <span class="at">thousands =</span> <span class="st">&quot;,&quot;</span>, <span class="at">digits =</span> <span class="dv">0</span>)</span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-0b83a62c60a2af46c7a9" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0b83a62c60a2af46c7a9">{"x":{"data":{"item":["Widget A","Widget B","Widget C"],"price":[1234.5,99999.99000000001,450],"volume":[1500000,230000,85000]},"options":{"columns":["item","price","volume"],"columnDefs":[{"targets":1,"render":"DataTable.render.number('.',',',2,'R$ ','')"},{"targets":2,"render":"DataTable.render.number(',',null,0,'','')"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-9f545fe1a573300ef985" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9f545fe1a573300ef985">{"x":{"data":{"item":["Widget A","Widget B","Widget C"],"price":[1234.5,99999.99000000001,450],"volume":[1500000,230000,85000]},"options":{"columns":["item","price","volume"],"columnDefs":[{"targets":1,"render":"DataTable.render.number(\".\",\",\",2,\"R$ \",\"\")"},{"targets":2,"render":"DataTable.render.number(\",\",null,0,\"\",\"\")"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render"],"jsHooks":[]}</script>
 </div>
 <div id="abbreviated-numbers" class="section level2">
 <h2>Abbreviated Numbers</h2>
@@ -2240,8 +2252,8 @@ follow the same pattern:</p>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df))</span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_format_number_abbrev</span>(opts, <span class="st">&quot;value&quot;</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-e6aaf73eeaccf884cbc7" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e6aaf73eeaccf884cbc7">{"x":{"data":{"metric":["Users","Revenue","Transactions","API Calls"],"value":[2100000,850000,12500000,3700000000]},"options":{"columns":["metric","value"],"columnDefs":[{"targets":1,"render":"function(d, t, row, meta){\n         if (t !== 'display' && t !== 'filter') return d;\n         var n = Number(d);\n         if (!isFinite(n)) return d;\n         var abs = Math.abs(n), sign = n < 0 ? '-' : '';\n         function fmt(x){ return x.toFixed(1); }\n         if (abs >= 1e9)  return sign + fmt(abs/1e9) + 'B';\n         if (abs >= 1e6)  return sign + fmt(abs/1e6) + 'M';\n         if (abs >= 1e3)  return sign + fmt(abs/1e3) + 'k';\n         return n.toFixed(1);\n       }"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-6d7c22aec7c5e0ef4edd" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6d7c22aec7c5e0ef4edd">{"x":{"data":{"metric":["Users","Revenue","Transactions","API Calls"],"value":[2100000,850000,12500000,3700000000]},"options":{"columns":["metric","value"],"columnDefs":[{"targets":1,"render":"function(d, t, row, meta){\n         if (t !== 'display' && t !== 'filter') return d;\n         var n = Number(d);\n         if (!isFinite(n)) return d;\n         var abs = Math.abs(n), sign = n < 0 ? '-' : '';\n         function fmt(x){ return x.toFixed(1); }\n         if (abs >= 1e9)  return sign + fmt(abs/1e9) + 'B';\n         if (abs >= 1e6)  return sign + fmt(abs/1e6) + 'M';\n         if (abs >= 1e3)  return sign + fmt(abs/1e3) + 'k';\n         return n.toFixed(1);\n       }"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="datetime-formatting" class="section level2">
 <h2>Date/Time Formatting</h2>
@@ -2255,8 +2267,8 @@ display:</p>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df))</span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_format_datetime</span>(opts, <span class="st">&quot;date&quot;</span>, <span class="at">to =</span> <span class="st">&quot;DD/MM/YYYY&quot;</span>)</span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-48318fc59491442414bc" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-48318fc59491442414bc">{"x":{"data":{"event":["Launch","Update","Sunset"],"date":["2025-01-15","2025-06-20","2025-12-31"]},"options":{"columns":["event","date"],"columnDefs":[{"targets":1,"render":"DataTable.render.datetime(undefined, 'DD/MM/YYYY', undefined, undefined)"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-5f7313a6301a3661df6c" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5f7313a6301a3661df6c">{"x":{"data":{"event":["Launch","Update","Sunset"],"date":["2025-01-15","2025-06-20","2025-12-31"]},"options":{"columns":["event","date"],"columnDefs":[{"targets":1,"render":"DataTable.render.datetime(undefined, \"DD/MM/YYYY\", undefined, undefined)"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="relative-time" class="section level2">
 <h2>Relative Time</h2>
@@ -2269,8 +2281,8 @@ hours ago”, etc.:</p>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df))</span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_format_time_relative</span>(opts, <span class="st">&quot;when&quot;</span>, <span class="at">locale =</span> <span class="st">&quot;en&quot;</span>)</span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-18c13017b23e888b55f2" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-18c13017b23e888b55f2">{"x":{"data":{"action":["Login","Upload","Export","Logout"],"when":["2026-04-29 14:20:52","2026-04-29 11:21:52","2026-04-27 14:21:52","2026-04-29 14:21:37"]},"options":{"columns":["action","when"],"_momentLocale":"en","columnDefs":[{"targets":1,"render":"\nfunction(d, t, row, meta){\n  if (d == null || d === '') return d;\n  try {\n    if (window.moment){\n      var m = moment(d);\n      if (m.isValid()) return m.fromNow(); // uses active locale\n    }\n  } catch(e){}\n  return d;\n}"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-1e4ddd9803936e550f90" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1e4ddd9803936e550f90">{"x":{"data":{"action":["Login","Upload","Export","Logout"],"when":["2026-06-13 21:52:24","2026-06-13 18:53:24","2026-06-11 21:53:24","2026-06-13 21:53:09"]},"options":{"columns":["action","when"],"_momentLocale":"en","columnDefs":[{"targets":1,"render":"\nfunction(d, t, row, meta){\n  if (d == null || d === '') return d;\n  try {\n    if (window.moment){\n      var m = moment(d);\n      if (m.isValid()) return m.fromNow(); // uses active locale\n    }\n  } catch(e){}\n  return d;\n}"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="custom-js-renderers" class="section level2">
 <h2>Custom JS Renderers</h2>
@@ -2295,8 +2307,8 @@ hours ago”, etc.:</p>
 <span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df))</span>
 <span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_cols_render_js</span>(opts, <span class="st">&quot;uptime&quot;</span>, traffic_light)</span>
 <span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-a3632cf5eba720698dbf" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a3632cf5eba720698dbf">{"x":{"data":{"server":["web-01","web-02","db-01","cache-01"],"uptime":[99.90000000000001,87.3,45.2,100]},"options":{"columns":["server","uptime"],"columnDefs":[{"targets":1,"render":"\n  function(data, type, row, meta) {\n    if (type !== 'display') return data;\n    var v = parseFloat(data);\n    var color = v >= 80 ? '#198754' : (v >= 50 ? '#ffc107' : '#dc3545');\n    return '<span style=\"display:inline-block;width:12px;height:12px;' +\n           'border-radius:50%;background:' + color + ';margin-right:6px\">' +\n           '<\/span>' + data + '%';\n  }\n"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-f922944d91df92c1523b" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f922944d91df92c1523b">{"x":{"data":{"server":["web-01","web-02","db-01","cache-01"],"uptime":[99.90000000000001,87.3,45.2,100]},"options":{"columns":["server","uptime"],"columnDefs":[{"targets":1,"render":"\n  function(data, type, row, meta) {\n    if (type !== 'display') return data;\n    var v = parseFloat(data);\n    var color = v >= 80 ? '#198754' : (v >= 50 ? '#ffc107' : '#dc3545');\n    return '<span style=\"display:inline-block;width:12px;height:12px;' +\n           'border-radius:50%;background:' + color + ';margin-right:6px\">' +\n           '<\/span>' + data + '%';\n  }\n"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="html-templates" class="section level2">
 <h2>HTML Templates</h2>
@@ -2311,8 +2323,8 @@ values in HTML:</p>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_col_template</span>(opts, <span class="st">&quot;email&quot;</span>,</span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="st">&#39;&lt;a href=&quot;mailto:{{VAL}}&quot;&gt;{{VAL}}&lt;/a&gt;&#39;</span>)</span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-1230376cdc5516aab341" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1230376cdc5516aab341">{"x":{"data":{"name":["Alice","Bob","Carol"],"email":["alice@example.com","bob@example.com","carol@example.com"],"score":[95,82,91]},"options":{"columns":["name","email","score"],"columnDefs":[{"targets":1,"render":"function(d,t,row,meta){ if(t!=='display') return d; var html=\"<a href=\\\"mailto:{{VAL}}\\\">{{VAL}}<\\/a>\"; return html.replace(/\\{\\{VAL\\}\\}/g, d); }"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-cc38355fa58523d5c77e" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-cc38355fa58523d5c77e">{"x":{"data":{"name":["Alice","Bob","Carol"],"email":["alice@example.com","bob@example.com","carol@example.com"],"score":[95,82,91]},"options":{"columns":["name","email","score"],"columnDefs":[{"targets":1,"render":"function(d,t,row,meta){ if(t!=='display') return d; var html=\"<a href=\\\"mailto:{{VAL}}\\\">{{VAL}}<\\/a>\"; return html.replace(/\\{\\{VAL\\}\\}/g, d); }"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 <div id="orthogonal-rendering" class="section level2">
 <h2>Orthogonal Rendering</h2>
@@ -2340,8 +2352,8 @@ values for display vs. sorting vs. filtering:</p>
 <span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">columns =</span> <span class="fu">names</span>(df))</span>
 <span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">dt2_use_renderer</span>(opts, <span class="st">&quot;done&quot;</span>, <span class="st">&quot;pct_bar&quot;</span>)</span>
 <span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="fu">dt2</span>(df, <span class="at">options =</span> opts)</span></code></pre></div>
-<div id="htmlwidget-6efcdfa36d7749529f29" style="width:100%;height:auto;" class="dt2 html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6efcdfa36d7749529f29">{"x":{"data":{"task":["A","B","C"],"done":[75,40,95]},"options":{"columns":["task","done"],"columnDefs":[{"targets":1,"render":"\n  function(data, type) {\n    if (type !== 'display') return data;\n    var pct = Math.min(100, Math.max(0, parseFloat(data)));\n    return '<div style=\"background:#e9ecef;border-radius:3px;margin:6px\">' +\n           '<div style=\"width:' + pct + '%;background:#0d6efd;height:10px;' +\n           'border-radius:3px\"><\/div><\/div>';\n  }\n"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
+<div id="htmlwidget-c49920615e5b23f044f0" style="width:100%;height:auto;" class="dt2 html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c49920615e5b23f044f0">{"x":{"data":{"task":["A","B","C"],"done":[75,40,95]},"options":{"columns":["task","done"],"columnDefs":[{"targets":1,"render":"\n  function(data, type) {\n    if (type !== 'display') return data;\n    var pct = Math.min(100, Math.max(0, parseFloat(data)));\n    return '<div style=\"background:#e9ecef;border-radius:3px;margin:6px\">' +\n           '<div style=\"width:' + pct + '%;background:#0d6efd;height:10px;' +\n           'border-radius:3px\"><\/div><\/div>';\n  }\n"}],"dt2_theme":{"bs":"bootstrap5","striped":true,"hover":true,"compact":true,"font_scale":0.8,"class":null,"button_class":"btn btn-sm btn-outline-secondary"},"responsive":true}},"evals":["options.columnDefs.0.render"],"jsHooks":[]}</script>
 </div>
 
 

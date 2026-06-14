@@ -56,8 +56,10 @@
 #' @examples
 #' # Create and reuse
 #' my_theme <- dt2_theme("clean", compact = TRUE)
+#' \donttest{
 #' dt2(iris, theme = my_theme)
 #' dt2(mtcars, theme = my_theme)
+#' }
 #'
 #' # Custom button style
 #' dt2_theme("default", button_class = "btn btn-sm btn-primary")
@@ -111,6 +113,7 @@ print.dt2_theme <- function(x, ...) {
   cat("  font_scale   =", x$font_scale, "\n")
   cat("  style        =", x$style, "\n")
   cat("  button_class =", x$button_class, "\n")
+  cat("  class        =", x$class %||% "<none>", "\n")
   invisible(x)
 }
 
@@ -160,6 +163,7 @@ print.dt2_theme <- function(x, ...) {
 #' # Just works — beautiful defaults
 #' dt2(iris)
 #'
+#' \donttest{
 #' # Override style inline
 #' dt2(iris, striped = FALSE)
 #' dt2(iris, font_scale = 0.85, compact = FALSE)
@@ -203,6 +207,7 @@ print.dt2_theme <- function(x, ...) {
 #'       buttons = list("copy", "csv", "excel"),
 #'       layout = list(topEnd = "buttons")
 #'     ))
+#' }
 dt2 <- function(data,
                 # ---- styling ----
                 theme        = "default",
@@ -281,6 +286,16 @@ dt2 <- function(data,
     options$responsive <- TRUE
   } else if (identical(responsive, FALSE)) {
     options$responsive <- NULL  # ensure extension is not loaded
+  }
+
+  # ---- Column names -----------------------------------------------------------
+  # Expose the data's column names as options$columns when the user didn't set
+  # them. This is the canonical list that name-based helpers resolve against and
+  # is equivalent to the column list dt2.js derives client-side, so it does not
+  # change rendering -- it just makes the names available downstream.
+  if (is.null(options$columns)) {
+    cn <- colnames(data)
+    if (!is.null(cn)) options$columns <- cn
   }
 
   # ---- Extensions auto-detect ------------------------------------------------
